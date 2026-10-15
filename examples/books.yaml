@@ -1,0 +1,44 @@
+# Demo target: https://books.toscrape.com
+# A site built specifically for scraping practice — safe to test against.
+
+name: books
+
+start_urls:
+  - https://books.toscrape.com/catalogue/page-1.html
+
+item_selector: "css:article.product_pod"
+next_page: "css:li.next a"
+max_pages: 3
+
+fetch:
+  delay: 1.0
+  jitter: 0.4
+  timeout: 20
+  retries: 3
+  respect_robots: true
+
+fields:
+  - name: title
+    selector: "css:h3 a"
+    attr: title
+
+  - name: price
+    selector: "css:p.price_color"
+    transform: float
+
+  - name: currency
+    selector: "css:p.price_color"
+    regex: "([^\\d\\s]+)"
+
+  - name: availability
+    selector: "css:p.instock.availability"
+    transform: strip
+
+  - name: rating
+    selector: "css:p.star-rating"
+    attr: class
+    regex: "star-rating (\\w+)"
+
+  - name: product_url
+    selector: "css:h3 a"
+    attr: href

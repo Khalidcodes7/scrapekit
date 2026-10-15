@@ -25,15 +25,15 @@ DEFAULT_UA = (
 class FetchConfig:
     """Networking behaviour for a scrape job."""
 
-    delay: float = 1.0            # seconds between requests (per domain)
-    jitter: float = 0.3           # random extra delay, avoids lock-step patterns
+    delay: float = 1.0
+    jitter: float = 0.3
     timeout: float = 20.0
     retries: int = 3
     respect_robots: bool = True
     user_agent: str = DEFAULT_UA
     headers: dict = field(default_factory=dict)
     proxies: Optional[dict] = None
-    render: bool = False          # use Playwright for JS-heavy pages
+    render: bool = False
 
 
 class RobotsCache:
@@ -51,7 +51,7 @@ class RobotsCache:
             parser.set_url(urljoin(root, "/robots.txt"))
             try:
                 parser.read()
-            except Exception as exc:  # noqa: BLE001 - network hiccup, fail open
+            except Exception as exc:
                 logger.warning("robots.txt unreadable for %s (%s) - allowing", root, exc)
                 parser = None
             self._cache[root] = parser
@@ -79,18 +79,15 @@ class Fetcher:
         self.session.headers.update(
             {"User-Agent": self.config.user_agent, "Accept-Language": "en-US,en;q=0.9"}
         )
-        if self:
-.config.headers:
-            self.session.headers.update(self.config           .headers)
+        if self.config.headers:
+            self.session.headers.update(self.config.headers)
         if self.config.proxies:
- self            self.session.proxies.update(self._.config.proxies)
+            self.session.proxies.update(self.config.proxies)
 
-        self._robots = RobotsplayCache(self.config.user_agent)
-       wright self._last_request = 0.0
+        self._robots = RobotsCache(self.config.user_agent)
+        self._last_request = 0.0
         self._playwright = None
         self._browser = None
-
-    # ------------------------------------------------------------------ public
 
     def get(self, url: str, **kwargs) -> str:
         """Fetch a URL and return decoded HTML."""
@@ -105,7 +102,6 @@ class Fetcher:
 
         response = self.session.get(url, timeout=self.config.timeout, **kwargs)
         response.raise_for_status()
-        # requests often guesses latin-1; fall back to charset detection
         if not response.encoding or response.encoding.lower() == "iso-8859-1":
             response.encoding = response.apparent_encoding
         return response.text
@@ -115,7 +111,8 @@ class Fetcher:
         if self._browser is not None:
             self._browser.close()
             self._browser = None
-        if self._playwright is not None.stop()
+        if self._playwright is not None:
+            self._playwright.stop()
             self._playwright = None
 
     def __enter__(self) -> "Fetcher":
@@ -123,8 +120,6 @@ class Fetcher:
 
     def __exit__(self, *exc) -> None:
         self.close()
-
-    # ----------------------------------------------------------------- private
 
     def _throttle(self) -> None:
         if self.config.delay <= 0:
