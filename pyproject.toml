@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scrapekit"
+version = "0.1.0"
+description = "Config-driven web scraping and data extraction toolkit with CSS/XPath selectors, pagination, and CSV/JSON/Excel export."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Khalid", email = "k.naveedfsd1968@gmail.com" }]
+keywords = ["web-scraping", "data-extraction", "crawler", "etl", "csv", "automation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Text Processing :: Markup :: HTML",
+]
+dependencies = [
+    "requests>=2.31",
+    "parsel>=1.8",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+render = ["playwright>=1.40"]
+excel = ["openpyxl>=3.1"]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+scrapekit = "scrapekit.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Khalidcodes7/scrapekit"
+Issues = "https://github.com/Khalidcodes7/scrapekit/issues"
+
+[tool.setuptools.packages.find]
+include = ["scrapekit*"]
